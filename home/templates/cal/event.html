@@ -6,14 +6,15 @@ Event
 
 {% block content %}
 <div class="clearfix">
-  <a class="btn btn-info left" href="{% url 'calendar' %}"> Calendar </a>
+  <a class="btn btn-info left" href="{% url 'home:calendar' %}"> Calendar </a>
 </div>
 
-<form method="post">
+<form method="post" class="form">
   {% csrf_token %}
-  <table class="form form-table">
-    {{ form }}
-    <tr><td colspan="2"><button type="submit" class="btn btn-info right"> Submit </button></td></tr>
-  </table>
+  {{ form.as_p }}  <!-- This should include the start_time field -->
+  <button type="submit" class="btn btn-primary float-right mt-3">
+      {% if event.id %}Update{% else %}Add{% endif %} Event
+  </button>
 </form>
+
 {% endblock %}

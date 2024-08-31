@@ -15,17 +15,27 @@ def index(request):
 
 
 def event(request, event_id=None):
-    instance = Event()
     if event_id:
         instance = get_object_or_404(Event, pk=event_id)
     else:
         instance = Event()
+        date = request.GET.get('date')
+        if date:
+            instance.start_time = datetime.strptime(date, '%Y-%m-%d')
+            instance.end_time = instance.start_time + timedelta(hours=1)
     
     form = EventForm(request.POST or None, instance=instance)
-    if request.POST and form.is_valid():
-        form.save()
-        return HttpResponseRedirect(reverse('home:cal/calendar'))
-    return render(request, 'cal/event.html', {'form': form})
+    
+    if request.POST:
+        if form.is_valid():
+            print("Start Time:", form.cleaned_data['start_time'])
+            print("End Time:", form.cleaned_data['end_time'])
+            form.save()
+            return HttpResponseRedirect(reverse('cal:calendar'))
+        else:
+            print("Form errors:", form.errors)  # Print form errors for debugging
+    
+    return render(request, 'cal/event.html', {'form': form, 'event': instance})
 
 
 class CalendarView(generic.ListView):
